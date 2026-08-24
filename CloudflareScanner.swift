@@ -70,20 +70,12 @@ final class CloudflareScanner {
         let start = Date()
         let connection = NWConnection(host: NWEndpoint.Host(ip), port: NWEndpoint.Port(rawValue: UInt16(port))!, using: version == 6 ? .tcp : .tcp)
         let result: Bool = await withCheckedContinuation { continuation in
-            let lock = NSLock()
-            var completed = false
             connection.stateUpdateHandler = { state in
                 switch state {
                 case .ready:
-                    lock.lock(); defer { lock.unlock() }
-                    guard !completed else { return }
-                    completed = true
                     continuation.resume(returning: true)
                     connection.cancel()
                 case .failed, .cancelled:
-                    lock.lock(); defer { lock.unlock() }
-                    guard !completed else { return }
-                    completed = true
                     continuation.resume(returning: false)
                     connection.cancel()
                 default: break
@@ -108,7 +100,7 @@ final class CloudflareScanner {
         do {
             let (data, response) = try await session.data(for: request)
             guard (response as? HTTPURLResponse)?.statusCode == 200 else { return nil }
-            let values = String(decoding: data, as: UTF8.self).split(separator: "\\n").reduce(into: [String: String]()) { dict, line in
+            let values = String(decoding: data, as: UTF8.self).split(whereSeparator: { $0 == "\n" }).reduce(into: [String: String]()) { dict, line in
                 let pair = line.split(separator: "=", maxSplits: 1).map(String.init)
                 if pair.count == 2 { dict[pair[0]] = pair[1] }
             }
@@ -120,11 +112,11 @@ final class CloudflareScanner {
     private func loadCIDRs(version: Int) async -> [String] {
         let endpoint = version == 6 ? "https://www.cloudflare.com/ips-v6" : "https://www.cloudflare.com/ips-v4"
         guard let url = URL(string: endpoint), let (data, _) = try? await session.data(from: url) else { return [] }
-        return String(decoding: data, as: UTF8.self).split(whereSeparator: \\.isNewline).map(String.init)
+        return String(decoding: data, as: UTF8.self).split(whereSeparator: { $0 == "\n" }).map(String.init)
     }
 
     private func generateAddresses(cidrs: [String], version: Int, sample: Int) -> [String] {
-        cidrs.compactMap { cidr in
+        cidrs.compactMap { cidr -> [String]? in
             let parts = cidr.split(separator: "/")
             guard parts.count == 2, let prefix = Int(parts[1]) else { return nil }
             let count = version == 4 ? max(1, sample) : max(1, sample)

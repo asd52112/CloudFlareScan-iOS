@@ -2,18 +2,13 @@ name: CloudFlareScan
 options:
   bundleIdPrefix: com.cloudflarescan
   deploymentTarget:
-    iOS: "15.0"
+    iOS: "16.0"
 targets:
   CloudFlareScan:
     type: application
     platform: iOS
     sources:
-      - path: .
-        excludes:
-          - README.md
-          - project.yml
-          - build.yml
-          - .github
+      - path: CloudFlareScan
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.cloudflarescan.ios
@@ -30,3 +25,7 @@ targets:
           CODE_SIGN_IDENTITY: "-"
         Release:
           CODE_SIGN_IDENTITY: "-"
+    scheme:
+      gatherCoverageData: false
+      management:
+        CLOUD_CODE_SIGN_IDENTITY: "-"

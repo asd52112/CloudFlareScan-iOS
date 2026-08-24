@@ -13,7 +13,7 @@ struct ContentView: View {
     @State private var sample = 1
     @State private var region = ""
     @State private var count = 10
-    @State private var exportURL: URL?
+    @State private var exportURL: ShareFile?
     private let ports = [443, 2053, 2083, 2087, 2096, 8443]
 
     var body: some View {
@@ -21,7 +21,7 @@ struct ContentView: View {
             ScrollView { VStack(alignment: .leading, spacing: 18) { header; controls; progressPanel; logPanel; resultsPanel }.padding() }
                 .background(Color(.systemGroupedBackground)).navigationTitle("CloudFlare Scan")
                 .toolbar { ToolbarItem(placement: .topBarTrailing) { Button("停止") { stop() }.disabled(phase == .idle) } }
-                    .sheet(item: $exportURL) { url in ActivityView(activityItems: [url]) }
+                    .sheet(item: $exportURL) { file in ActivityView(activityItems: [file.url]) }
         }
     }
     private var header: some View { VStack(alignment: .leading, spacing: 6) { Text("节点测速工具").font(.largeTitle.bold()); Text("扫描 Cloudflare 官方网段，找出低延迟节点").foregroundStyle(.secondary) } }
@@ -46,10 +46,12 @@ struct ContentView: View {
         let rows = results.map { "\($0.ip),\($0.colo),\($0.region),\($0.latency),\($0.downloadSpeed ?? 0),\($0.port)" }
         let csv = (["IP,机房,地区,延迟(ms),速度(MB/s),端口"] + rows).joined(separator: "\n")
         let url = FileManager.default.temporaryDirectory.appendingPathComponent("cfs_results.csv")
-        do { try csv.data(using: .utf8)?.write(to: url); exportURL = url; logs.append("CSV 已生成") }
+        do { try csv.data(using: .utf8)?.write(to: url); exportURL = ShareFile(url: url); logs.append("CSV 已生成") }
         catch { logs.append("CSV 导出失败：\(error.localizedDescription)") }
     }
 }
+
+struct ShareFile: Identifiable { let id = UUID(); let url: URL }
 
 struct ActivityView: UIViewControllerRepresentable {
     let activityItems: [Any]
