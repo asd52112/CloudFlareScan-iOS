@@ -8,7 +8,12 @@ targets:
     type: application
     platform: iOS
     sources:
-      - path: CloudFlareScan
+      - path: .
+        excludes:
+          - README.md
+          - project.yml
+          - build.yml
+          - .github
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.cloudflarescan.ios
@@ -25,7 +30,3 @@ targets:
           CODE_SIGN_IDENTITY: "-"
         Release:
           CODE_SIGN_IDENTITY: "-"
-    scheme:
-      gatherCoverageData: false
-      management:
-        CLOUD_CODE_SIGN_IDENTITY: "-"
