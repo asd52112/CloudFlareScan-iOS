@@ -9,6 +9,11 @@ targets:
     platform: iOS
     sources:
       - path: .
+        excludes:
+          - README.md
+          - project.yml
+          - build.yml
+          - .github
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.cloudflarescan.ios
