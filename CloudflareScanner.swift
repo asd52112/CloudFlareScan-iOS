@@ -59,7 +59,7 @@ final class CloudflareScanner {
             let (bytes, _) = try await session.bytes(for: request)
             var count = 0
             for try await chunk in bytes {
-                count += chunk.count
+                count += 1
                 if Date().timeIntervalSince(start) >= 3 { break }
             }
             return Double(count) / 1024 / 1024 / max(0.1, Date().timeIntervalSince(start))
