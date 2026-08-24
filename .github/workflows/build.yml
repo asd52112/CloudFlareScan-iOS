@@ -18,7 +18,7 @@ jobs:
           sed -i '' 's/objectVersion = 77;/objectVersion = 60;/' CloudFlareScan.xcodeproj/project.pbxproj
       - name: Build unsigned archive
         run: |
-          xcodebuild archive             -project CloudFlareScan.xcodeproj             -scheme CloudFlareScan             -configuration Release             -sdk iphoneos             -archivePath build/CloudFlareScan.xcarchive             CODE_SIGNING_ALLOWED=NO             CODE_SIGNING_REQUIRED=NO
+          xcodebuild archive             -project CloudFlareScan.xcodeproj             -scheme CloudFlareScan             -configuration Release             -sdk iphoneos             -archivePath build/CloudFlareScan.xcarchive             PRODUCT_BUNDLE_IDENTIFIER=com.cloudflarescan.ios             CODE_SIGNING_ALLOWED=NO             CODE_SIGNING_REQUIRED=NO             CODE_SIGN_IDENTITY=""
       - name: Package IPA
         run: |
           mkdir -p build/Payload
