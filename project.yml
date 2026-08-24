@@ -1,0 +1,31 @@
+name: CloudFlareScan
+options:
+  bundleIdPrefix: com.cloudflarescan
+  deploymentTarget:
+    iOS: "15.0"
+targets:
+  CloudFlareScan:
+    type: application
+    platform: iOS
+    sources:
+      - path: CloudFlareScan
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.cloudflarescan.ios
+        PRODUCT_NAME: CloudFlareScan
+        SWIFT_VERSION: 5.0
+        INFOPLIST_KEY_CFBundleDisplayName: CloudFlareScan
+        INFOPLIST_KEY_LSApplicationCategoryType: public.app-category.utilities
+        INFOPLIST_KEY_NSLocalNetworkUsageDescription: 用于测试 Cloudflare 节点连接质量
+        TARGETED_DEVICE_FAMILY: "1,2"
+        CODE_SIGN_STYLE: Manual
+        DEVELOPMENT_TEAM: ""
+      configs:
+        Debug:
+          CODE_SIGN_IDENTITY: "-"
+        Release:
+          CODE_SIGN_IDENTITY: "-"
+    scheme:
+      gatherCoverageData: false
+      management:
+        CLOUD_CODE_SIGN_IDENTITY: "-"
