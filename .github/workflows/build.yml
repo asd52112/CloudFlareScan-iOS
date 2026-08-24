@@ -13,17 +13,12 @@ jobs:
       - name: Install XcodeGen
         run: brew install xcodegen
       - name: Generate Xcode project
-        run: xcodegen generate
+        run: |
+          xcodegen generate
+          sed -i '' 's/objectVersion = 77;/objectVersion = 60;/' CloudFlareScan.xcodeproj/project.pbxproj
       - name: Build unsigned archive
         run: |
-          xcodebuild archive \
-            -project CloudFlareScan.xcodeproj \
-            -scheme CloudFlareScan \
-            -configuration Release \
-            -sdk iphoneos \
-            -archivePath build/CloudFlareScan.xcarchive \
-            CODE_SIGNING_ALLOWED=NO \
-            CODE_SIGNING_REQUIRED=NO
+          xcodebuild archive             -project CloudFlareScan.xcodeproj             -scheme CloudFlareScan             -configuration Release             -sdk iphoneos             -archivePath build/CloudFlareScan.xcarchive             CODE_SIGNING_ALLOWED=NO             CODE_SIGNING_REQUIRED=NO
       - name: Package IPA
         run: |
           mkdir -p build/Payload
