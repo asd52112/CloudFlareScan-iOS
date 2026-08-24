@@ -48,7 +48,8 @@ final class CloudflareScanner {
 
     func downloadSpeed(for result: ScanResult) async -> Double {
         guard !cancelled else { return 0 }
-        guard let url = URL(string: "https://\(result.ip.contains(\":\") ? "[\(result.ip)]" : result.ip)/__down?bytes=50000000") else { return 0 }
+        let host = result.ip.contains(":") ? "[\(result.ip)]" : result.ip
+        guard let url = URL(string: "https://\(host)/__down?bytes=50000000") else { return 0 }
         var request = URLRequest(url: url)
         request.timeoutInterval = 4
         request.setValue("speed.cloudflare.com", forHTTPHeaderField: "Host")
