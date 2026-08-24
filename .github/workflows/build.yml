@@ -1,0 +1,36 @@
+name: Build IPA
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install XcodeGen
+        run: brew install xcodegen
+      - name: Generate Xcode project
+        run: xcodegen generate
+      - name: Build unsigned archive
+        run: |
+          xcodebuild archive \
+            -project CloudFlareScan.xcodeproj \
+            -scheme CloudFlareScan \
+            -configuration Release \
+            -sdk iphoneos \
+            -archivePath build/CloudFlareScan.xcarchive \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO
+      - name: Package IPA
+        run: |
+          mkdir -p build/Payload
+          cp -R build/CloudFlareScan.xcarchive/Products/Applications/CloudFlareScan.app build/Payload/
+          cd build
+          zip -r CloudFlareScan-unsigned.ipa Payload
+      - uses: actions/upload-artifact@v4
+        with:
+          name: CloudFlareScan-unsigned
+          path: build/CloudFlareScan-unsigned.ipa
